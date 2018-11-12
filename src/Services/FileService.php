@@ -15,6 +15,7 @@ class FileService implements FileServiceInterface
     private $fileSystem;
     private $repository;
     private $files = [];
+    private $filesBuffer = [];
     private $dirTreeCreated = false;
 
     public function __construct(FileSystemInterface $fileSystem, FtpRepositoryInterface $repository)
@@ -43,25 +44,40 @@ class FileService implements FileServiceInterface
             }
             else {
                 $hash = $this->getFileHash($absolutePath);
+                $this->filesBuffer[$relativePath] = $hash;
 
-                if (isset($this->files[$absolutePath]) && $this->files[$absolutePath] === $hash) {
+                if (isset($this->files[$relativePath]) && $this->files[$relativePath] === $hash) {
                     // файл загружен, хеш совпадает
                     continue;
                 }
-                elseif (isset($this->files[$absolutePath]) && $this->files[$absolutePath] !== $hash) {
+                elseif (isset($this->files[$relativePath]) && $this->files[$relativePath] !== $hash) {
                     // файл загружен, хеш не совпадает
                     $this->repository->uploadFiles($relativePath, $absolutePath);
-                    $this->files[$absolutePath] = $hash;
+                    $this->files[$relativePath] = $hash;
                 }
                 else {
                     // файл не загружен
                     $this->repository->uploadFiles($relativePath, $absolutePath);
-                    $this->files[$absolutePath] = $hash;
+                    $this->files[$relativePath] = $hash;
                 }
             }
         }
 
         return true;
+    }
+
+    public function compareFilesMap()
+    {
+        if (count($this->filesBuffer) !== count($this->files)) {
+            $oldFiles = array_diff_key($this->files, $this->filesBuffer);
+
+            foreach ($oldFiles as $key => $file) {
+                $this->repository->deleteFile($key);
+                unset($this->files[$key]);
+            }
+        }
+
+        $this->filesBuffer = [];
     }
 
     private function createDirectoryTree($relativeDirectory = null)

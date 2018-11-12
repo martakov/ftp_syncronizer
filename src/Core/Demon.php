@@ -8,6 +8,7 @@ use Syncronizer\Exceptions\AlreadyStoppedException;
 use Syncronizer\Exceptions\CantStopDaemonException;
 use Syncronizer\Exceptions\CouldNotForkException;
 use Syncronizer\Exceptions\InvalidPidPathException;
+use Syncronizer\Interfaces\FileServiceInterface;
 use Syncronizer\Interfaces\FileSystemInterface;
 use Syncronizer\Interfaces\SystemCallsInterface;
 
@@ -26,7 +27,7 @@ class Demon
         $this->systemCalls->listenSignal(SIGTERM, [$this, 'signalHandler']);
     }
 
-    public function start($fileService)
+    public function start(FileServiceInterface $fileService)
     {
         $runningPid = $this->getPid();
 
@@ -65,6 +66,7 @@ class Demon
 
         while(!$this->stopServer) {
             $fileService->putFilesOnFtp();
+            $fileService->compareFilesMap();
             $this->systemCalls->waitInterval();
             $this->systemCalls->dispatchSignals();
         }
