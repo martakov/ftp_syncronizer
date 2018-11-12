@@ -1,0 +1,23 @@
+{
+  "name": "sergei/ftp_syncronizer",
+  "authors": [
+    {
+      "name": "Sergei",
+      "email": "webcoder-master@yandex.ru"
+    }
+  ],
+  "require": {
+    "symfony/yaml": "^4.1",
+    "php": "~7.2",
+    "ext-ftp": "*",
+    "ext-pcntl": "*",
+    "ext-posix": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Syncronizer\\": "src/"
+    }
+  },
+  "require-dev": {
+  }
+}
