@@ -16,8 +16,6 @@ chdir(dirname(__DIR__));
 
 require_once 'vendor/autoload.php';
 
-define('IN_WORK', false);
-define('DONE', false);
 $config = Yaml::parseFile('config/config.yml');
 $command = getopt('d:')['d'];
 

@@ -43,12 +43,13 @@ class Demon
             throw new CouldNotForkException;
         }
 
+        // parent process
         if ($pid) {
-            // родительский процесс
+
             return true;
         }
 
-        ini_set('error_log','/home/sergei/project/ftp_syncronizer/storage/logs/error.log');
+        ini_set('error_log', '/home/sergei/project/ftp_syncronizer/storage/logs/error.log');
         fclose(STDIN);
         fclose(STDOUT);
         fclose(STDERR);
@@ -64,7 +65,7 @@ class Demon
 
         $this->fileSystem->filePutContents($this->pidPath, $sid);
 
-        while(!$this->stopServer) {
+        while (!$this->stopServer) {
             $fileService->putFilesOnFtp();
             $fileService->compareFilesMap();
             $this->systemCalls->waitInterval();
@@ -87,14 +88,16 @@ class Demon
         return true;
     }
 
-    public function signalHandler($signo) {
+    public function signalHandler($signo)
+    {
 
-        switch($signo) {
-            case SIGTERM: {
-                $this->stopServer = true;
-                $this->fileSystem->delete($this->pidPath);
-                break;
-            }
+        switch ($signo) {
+            case SIGTERM:
+                {
+                    $this->stopServer = true;
+                    $this->fileSystem->delete($this->pidPath);
+                    break;
+                }
         }
     }
 

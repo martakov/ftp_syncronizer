@@ -1,8 +1,6 @@
-host: 93.189.41.9
-user_name: user62771
-password: OpxtxnTLZVnY
+host: 0.0.0.0
+user_name: user_name
+password: user_password
 ftp_directory: /wordpress
-
-local_directory: /home/sergei/project/demo
-
+local_directory: absolute path to the directory
 pid_file: ./storage/pid
