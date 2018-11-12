@@ -13,9 +13,11 @@ interface FtpSystemInterface
 
     public function isDirExist(string $name): bool;
 
-    public function ftpPutFileAsynchronous(string $remoteFile, string $localFile, $mode);
+    public function ftpPutFileAsynchronous(string $remoteFile, string $localFile, int $mode);
 
     public function ftpPutFileAsynchronousContinue();
 
-    public function ftpPutFile($remoteFile, $localFile, $mode): bool;
+    public function ftpPutFile(string $remoteFile, string $localFile, int $mode): bool;
+
+    public function ftpDeleteFile(string $file): bool;
 }

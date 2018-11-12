@@ -11,18 +11,23 @@ class FtpSystem implements FtpSystemInterface
     private $connect;
     private $ftpDirectory;
 
-    public function __construct($host, $userName, $password, $ftpDirectory)
+    public function __construct(string $host, string $userName, string $password, string $ftpDirectory)
     {
         $this->connect = $this->ftpConnect($host, $userName, $password);
         $this->setFtpDirectory($ftpDirectory);
     }
 
-    public function ftpPutFile($remoteFile, $localFile, $mode): bool
+    public function ftpDeleteFile(string $remoteFile): bool
+    {
+        return ftp_delete($this->connect, $this->ftpDirectory . $remoteFile);
+    }
+
+    public function ftpPutFile(string $remoteFile, string $localFile, int $mode): bool
     {
         return ftp_put($this->connect, $this->ftpDirectory . $remoteFile, $localFile, $mode);
     }
 
-    public function ftpPutFileAsynchronous($remoteFile, $localFile, $mode)
+    public function ftpPutFileAsynchronous(string $remoteFile, string $localFile, int $mode)
     {
         return ftp_nb_put($this->connect, $this->ftpDirectory . $remoteFile, $localFile, $mode);
     }
@@ -32,7 +37,7 @@ class FtpSystem implements FtpSystemInterface
         return ftp_nb_continue($this->connect);
     }
 
-    public function ftpMakeDir($name)
+    public function ftpMakeDir(string $name)
     {
         return ftp_mkdir($this->connect, $this->ftpDirectory . $name);
     }
@@ -47,12 +52,12 @@ class FtpSystem implements FtpSystemInterface
         return ftp_pasv($this->connect, $pasv);
     }
 
-    public function isDirExist($name): bool
+    public function isDirExist(string $name): bool
     {
         return empty(ftp_rawlist($this->connect, $this->ftpDirectory . $name)) ? false : true;
     }
 
-    private function ftpConnect($host, $userName, $password)
+    private function ftpConnect(string $host, string $userName, string $password)
     {
         $connect = ftp_connect($host);
 
@@ -63,10 +68,7 @@ class FtpSystem implements FtpSystemInterface
         return $connect;
     }
 
-    /**
-     * @param string $ftpDirectory
-     */
-    public function setFtpDirectory(string $ftpDirectory): void
+    private function setFtpDirectory(string $ftpDirectory): void
     {
         $this->ftpDirectory = $ftpDirectory === '' ? $ftpDirectory : str_replace('/','', $ftpDirectory) . DIRECTORY_SEPARATOR;
 

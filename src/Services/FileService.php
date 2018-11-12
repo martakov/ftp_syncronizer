@@ -3,10 +3,11 @@
 namespace Syncronizer\Services;
 
 
+use Syncronizer\Interfaces\FileServiceInterface;
 use Syncronizer\Interfaces\FileSystemInterface;
 use Syncronizer\Interfaces\FtpRepositoryInterface;
 
-class FileService
+class FileService implements FileServiceInterface
 {
     /**
      * @var FileSystemInterface
@@ -20,25 +21,6 @@ class FileService
     {
         $this->fileSystem = $fileSystem;
         $this->repository = $repository;
-    }
-
-    public function createDirectoryTree($relativeDirectory = null)
-    {
-        $absoluteDirectory = $this->buildPathToLocalDirectory($relativeDirectory);
-        $files = $this->getFilesFromLocalDirectory($relativeDirectory);
-
-        foreach ($files as $i => $file) {
-
-            $relativePath = $this->buildRelativePath($relativeDirectory, $file);
-            $absolutePath = $this->buildAbsolutePath($absoluteDirectory, $file);
-
-            if ($this->fileSystem->isDir($absolutePath)) {
-                $this->repository->createDirectory($relativePath);
-                $this->createDirectoryTree($relativePath);
-            }
-        }
-
-        return true;
     }
 
     public function putFilesOnFtp($relativeDirectory = null)
@@ -63,11 +45,11 @@ class FileService
                 $hash = $this->getFileHash($absolutePath);
 
                 if (isset($this->files[$absolutePath]) && $this->files[$absolutePath] === $hash) {
-                    // файл загружен, хэш совпадает
+                    // файл загружен, хеш совпадает
                     continue;
                 }
                 elseif (isset($this->files[$absolutePath]) && $this->files[$absolutePath] !== $hash) {
-                    // файл загружен, хэш не совпадает
+                    // файл загружен, хеш не совпадает
                     $this->repository->uploadFiles($relativePath, $absolutePath);
                     $this->files[$absolutePath] = $hash;
                 }
@@ -76,6 +58,25 @@ class FileService
                     $this->repository->uploadFiles($relativePath, $absolutePath);
                     $this->files[$absolutePath] = $hash;
                 }
+            }
+        }
+
+        return true;
+    }
+
+    private function createDirectoryTree($relativeDirectory = null)
+    {
+        $absoluteDirectory = $this->buildPathToLocalDirectory($relativeDirectory);
+        $files = $this->getFilesFromLocalDirectory($relativeDirectory);
+
+        foreach ($files as $i => $file) {
+
+            $relativePath = $this->buildRelativePath($relativeDirectory, $file);
+            $absolutePath = $this->buildAbsolutePath($absoluteDirectory, $file);
+
+            if ($this->fileSystem->isDir($absolutePath)) {
+                $this->repository->createDirectory($relativePath);
+                $this->createDirectoryTree($relativePath);
             }
         }
 

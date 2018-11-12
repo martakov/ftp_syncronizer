@@ -62,9 +62,9 @@ class SystemCalls implements SystemCallsInterface
         return pcntl_waitpid($pid, $status, WNOHANG);
     }
 
-    public function waitInterval(): void
+    public function waitInterval($microSeconds = 1000000): void
     {
-        usleep(1000000);
+        usleep($microSeconds);
     }
 
     public function getPid()

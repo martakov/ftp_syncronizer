@@ -17,7 +17,6 @@ class Demon
     private $systemCalls;
     private $pidPath;
     private $stopServer = false;
-    private $worked = false;
 
     public function __construct(FileSystemInterface $fileSystem, SystemCallsInterface $systemCalls, $pidPath)
     {
@@ -65,7 +64,6 @@ class Demon
         $this->fileSystem->filePutContents($this->pidPath, $sid);
 
         while(!$this->stopServer) {
-
             $fileService->putFilesOnFtp();
             $this->systemCalls->waitInterval();
             $this->systemCalls->dispatchSignals();

@@ -31,7 +31,7 @@ $repository = new FtpRepository(new FtpSystem(
     $config['ftp_directory']
 ));
 
-$demon = new Demon($fileSystem, $systemCalls, $config['pid_path']);
+$demon = new Demon($fileSystem, $systemCalls, $config['pid_file']);
 $fileService = new FileService($fileSystem, $repository);
 
 try {
